@@ -4,8 +4,6 @@ import IconCheckCircle from './components/IconCheckCircle.vue';
 import IconDelete from './components/IconDelete.vue';
 import IconEdit from './components/IconEdit.vue';
 
-
-
 export default {
   name: 'App',
   components: {
@@ -117,8 +115,16 @@ export default {
     padding-bottom: 6px;
   }
 
+  .tab-item:hover .tab-button {
+    color: #0728bf;
+  }
+
   .tab-item.is-active {
     border-bottom: 3px solid #0631f8;
+  }
+
+  .tab-item.is-active .tab-button {
+    color: #2d2d2d;
   }
 
   .tab-button {
