@@ -1,6 +1,19 @@
 <script>
+import IconCircle from './components/IconCircle.vue';
+import IconCheckCircle from './components/IconCheckCircle.vue';
+import IconDelete from './components/IconDelete.vue';
+import IconEdit from './components/IconEdit.vue';
+
+
+
 export default {
   name: 'App',
+  components: {
+    IconCheckCircle,
+    IconCircle,
+    IconDelete,
+    IconEdit,
+  }
 }
 
 </script>
@@ -29,6 +42,28 @@ export default {
         </li>
       </ul>
     </nav>
+    <ul class="task-list">
+      <li class="task-list-item">
+        <IconCircle />
+        <input type="checkbox"
+        class="sr-only"> 
+        <p class="task-list-text">Go to the grocery store</p>
+        <div class="task-list-cta">
+          <p><IconEdit /><span class="sr-only">Edit</span> </p>
+          <p><IconDelete /><span class="sr-only">Delete</span></p>
+        </div>
+      </li>
+      <li class="task-list-item">
+        <IconCheckCircle />
+        <input type="checkbox"
+        class="sr-only"> 
+        <p class="task-list-text">Go to the grocery store</p>
+        <div class="task-list-cta">
+          <p><IconEdit /><span class="sr-only">Edit</span> </p>
+          <p><IconDelete /><span class="sr-only">Delete</span></p>
+        </div>
+      </li>
+    </ul>
   </main>
 </template>
 
@@ -39,6 +74,35 @@ export default {
 
   html {
     background-color: #fbfbfb;
+  }
+
+  .task-list {
+    padding: 0;
+  }
+
+  .task-list-item {
+    border: 1px solid #f6f6f6;
+    box-shadow: 2px 2px 8px 0 #cfcfcf;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    margin-bottom: 16px;
+  }
+
+  .task-list-item:hover {
+    border: 1px solid #0631f8;
+  }
+
+  .task-list-cta {
+    display: flex;
+    column-gap: 16px;
+  }
+
+  .task-list-text {
+    display: flex;
+    font-weight: bold;
+    flex: 1;
   }
 
   .tab-wrapper {
