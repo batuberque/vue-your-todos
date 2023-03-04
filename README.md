@@ -3,5 +3,5 @@
 Installizition :
 npm install
 
-FOR RUN :
+For Run :
 npm run dev
