@@ -1,4 +1,6 @@
 <script>
+import { computed, reactive, toRefs } from 'vue'
+import { v4 as uuid } from 'uuid'
 import IconCircle from './components/IconCircle.vue';
 import IconCheckCircle from './components/IconCheckCircle.vue';
 import IconDelete from './components/IconDelete.vue';
@@ -11,6 +13,75 @@ export default {
     IconCircle,
     IconDelete,
     IconEdit,
+  },
+  setup () {
+    const state = reactive({
+      currentView: 'All',
+      newTaskInput: '',
+      taskList: []
+    })
+
+    const taskLists = reactive({
+      all: computed(() => state.taskList),
+      current: computed(() => state.taskList.filter(item => item.complete === false)),
+      completed: computed(() => state.taskList.filter(item => item.complete === true))
+    })
+
+    const taskViews = reactive ({
+      allTasksLength: computed(() => taskLists.all.length),
+      currentTasksLength: computed(() => taskLists.current.length),
+      completedTasksLength: computed(() => taskLists.completed.length)
+    })
+
+    const tasksInView = computed(() => {
+      if (state.currentView === 'All') {
+        return state.taskList
+      } else if (state.currentView === 'Current') {
+        return state.taskList.filter(item => item.complete === false)
+      } else if (state.currentView === 'Completed') {
+        return state.taskList.filter(item => item.complete === true)
+      } else {
+        return state.taskList
+      }
+    })
+
+    const addTask = () => {
+      state.taskList.push({
+        id: uuid(),
+        complete: false,
+        edit: false,
+        label: state.newTaskInput
+      })
+      state.newTaskInput = ''
+    }
+
+    const toggleEdit = taskId => {
+      const taskIndex = state.taskList.findIndex(
+        task => task.id === taskId
+      )
+      state.taskList[taskIndex].edit = !state.taskList[taskIndex].edit
+    }
+
+    const deleteTask = taskId => {
+      const taskIndex = state.taskList.findIndex(
+        task => task.id === taskId
+      )
+      state.taskList.splice(taskIndex, 1)
+    }
+
+    const setView = viewLabel => {
+      state.currentView = viewLabel
+    }
+
+    return {
+      ...toRefs(state),
+      ...toRefs(taskViews),
+      addTask,
+      deleteTask,
+      setView,
+      tasksInView,
+      toggleEdit
+    }
   }
 }
 
@@ -24,41 +95,57 @@ export default {
       <input type="text" 
       placeholder="Type a new todo item"
       class="new-task-input"
+      v-model="newTaskInput"
+      @keyup.enter="addTask"
       >
-      <button class="new-task-button">+ Add</button>
+      <button class="new-task-button" @click="addTask">+ Add</button>
     </div>
     <nav>
       <ul class="tab-wrapper">
         <li class="tab-item is-active">
-          <button class="tab-button">All (3)</button>
+          <button class="tab-button" @click="setView('All')">
+            All ({{ allTasksLength }})
+          </button>
         </li>
         <li class="tab-item">
-          <button class="tab-button">Current (2)</button>
+          <button class="tab-button" @click="setView('Current')">
+            Current ({{ currentTasksLength }})
+          </button>
         </li>
         <li class="tab-item">
-          <button class="tab-button">Completed (1)</button>
+          <button class="tab-button" @click="setView('Completed')">
+            Completed ({{ completedTasksLength }})
+          </button>
         </li>
       </ul>
     </nav>
     <ul class="task-list">
-      <li class="task-list-item">
-        <IconCircle />
-        <input type="checkbox"
-        class="sr-only"> 
-        <p class="task-list-text">Go to the grocery store</p>
-        <div class="task-list-cta">
-          <p><IconEdit /><span class="sr-only">Edit</span> </p>
-          <p><IconDelete /><span class="sr-only">Delete</span></p>
+      <li v-for="taskItem in tasksInView" :key="taskItem.label" class="task-list-item">
+        <div class="task-list-checkbox-wrapper">
+          <IconCheckCircle v-show="taskItem.complete"/>
+          <IconCircle v-show="!taskItem.complete"/>
+          <input type="checkbox"
+          v-model="taskItem.complete"
+          :checked="taskItem.complete"
+          class="task-list-checkbox"
+        > 
         </div>
-      </li>
-      <li class="task-list-item">
-        <IconCheckCircle />
-        <input type="checkbox"
-        class="sr-only"> 
-        <p class="task-list-text">Go to the grocery store</p>
+        <p class="task-list-text">
+          {{ taskItem.label }}
+        </p>
+        <input 
+          v-if="taskItem.edit"
+          class="task-list-edit-input"
+          type="text"
+          v-model="taskItem.label"
+        >
         <div class="task-list-cta">
-          <p><IconEdit /><span class="sr-only">Edit</span> </p>
-          <p><IconDelete /><span class="sr-only">Delete</span></p>
+          <p><IconEdit @click="toggleEdit(taskItem.id)"/>
+            <span class="sr-only">Edit</span>
+          </p>
+          <p><IconDelete @click="deleteTask(taskItem.id)"/>
+            <span class="sr-only">Delete</span>
+          </p>
         </div>
       </li>
     </ul>
@@ -72,6 +159,20 @@ export default {
 
   html {
     background-color: #fbfbfb;
+  }
+
+  .task-list-checkbox-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .task-list-checkbox {
+    position: absolute;
+    left: -3px;
+    bottom: 2px;
+    opacity: 0;
   }
 
   .task-list {
@@ -97,10 +198,14 @@ export default {
     column-gap: 16px;
   }
 
+  .task-list-edit-input,
   .task-list-text {
     display: flex;
     font-weight: bold;
     flex: 1;
+    padding-left: 5px;
+    border: 0;
+    font-size: 16px;
   }
 
   .tab-wrapper {
