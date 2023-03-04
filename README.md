@@ -1,7 +1,7 @@
 # vue-your-todos
 
-Installizition
+Installizition :
 npm install
 
-FOR RUN
+FOR RUN :
 npm run dev
