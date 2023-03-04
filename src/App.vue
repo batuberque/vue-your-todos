@@ -20,7 +20,10 @@ export default {
     })
 
     const addTask = () => {
-      state.taskList.push(state.newTaskInput)
+      state.taskList.push({
+        complete: false,
+        label: state.newTaskInput
+      })
       state.newTaskInput = ''
     }
 
@@ -60,12 +63,17 @@ export default {
       </ul>
     </nav>
     <ul class="task-list">
-      <li v-for="taskItem in taskList" :key="taskItem" class="task-list-item">
-        <IconCircle />
-        <IconCheckCircle />
-        <input type="checkbox"
-        class="sr-only"> 
-        <p class="task-list-text">{{ taskItem }}</p>
+      <li v-for="taskItem in taskList" :key="taskItem.label" class="task-list-item">
+        <div class="task-list-checkbox-wrapper">
+          <IconCheckCircle v-show="taskItem.complete"/>
+          <IconCircle v-show="!taskItem.complete"/>
+          <input type="checkbox"
+          v-model="taskItem.complete"
+          :checked="taskItem.complete"
+          class="task-list-checkbox"
+        > 
+        </div>
+        <p class="task-list-text">{{ taskItem.label }}</p>
         <div class="task-list-cta">
           <p><IconEdit /><span class="sr-only">Edit</span> </p>
           <p><IconDelete /><span class="sr-only">Delete</span></p>
@@ -82,6 +90,20 @@ export default {
 
   html {
     background-color: #fbfbfb;
+  }
+
+  .task-list-checkbox-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .task-list-checkbox {
+    position: absolute;
+    left: -3px;
+    bottom: 2px;
+    opacity: 0;
   }
 
   .task-list {
@@ -111,6 +133,7 @@ export default {
     display: flex;
     font-weight: bold;
     flex: 1;
+    padding-left: 5px;
   }
 
   .tab-wrapper {
