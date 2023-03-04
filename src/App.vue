@@ -1,4 +1,5 @@
 <script>
+import { reactive, toRefs } from 'vue'
 import IconCircle from './components/IconCircle.vue';
 import IconCheckCircle from './components/IconCheckCircle.vue';
 import IconDelete from './components/IconDelete.vue';
@@ -11,6 +12,22 @@ export default {
     IconCircle,
     IconDelete,
     IconEdit,
+  },
+  setup () {
+    const state = reactive({
+      newTaskInput: '',
+      taskList: []
+    })
+
+    const addTask = () => {
+      state.taskList.push(state.newTaskInput)
+      state.newTaskInput = ''
+    }
+
+    return {
+      ...toRefs(state),
+      addTask
+    }
   }
 }
 
@@ -24,6 +41,8 @@ export default {
       <input type="text" 
       placeholder="Type a new todo item"
       class="new-task-input"
+      v-model="newTaskInput"
+      @keyup.enter="addTask"
       >
       <button class="new-task-button">+ Add</button>
     </div>
@@ -41,21 +60,12 @@ export default {
       </ul>
     </nav>
     <ul class="task-list">
-      <li class="task-list-item">
+      <li v-for="taskItem in taskList" :key="taskItem" class="task-list-item">
         <IconCircle />
-        <input type="checkbox"
-        class="sr-only"> 
-        <p class="task-list-text">Go to the grocery store</p>
-        <div class="task-list-cta">
-          <p><IconEdit /><span class="sr-only">Edit</span> </p>
-          <p><IconDelete /><span class="sr-only">Delete</span></p>
-        </div>
-      </li>
-      <li class="task-list-item">
         <IconCheckCircle />
         <input type="checkbox"
         class="sr-only"> 
-        <p class="task-list-text">Go to the grocery store</p>
+        <p class="task-list-text">{{ taskItem }}</p>
         <div class="task-list-cta">
           <p><IconEdit /><span class="sr-only">Edit</span> </p>
           <p><IconDelete /><span class="sr-only">Delete</span></p>
