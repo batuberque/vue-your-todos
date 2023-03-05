@@ -8,7 +8,7 @@
         A todo app powered by
         <a href="https://v3.vuejs.org">Vue 3</a>
         <span>, </span>
-        <a href="https://www.github.com/batuberque"></a>
+        <a href="https://www.github.com/batuberque">Github</a>
     </p>
 </template>
 
